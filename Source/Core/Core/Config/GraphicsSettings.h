@@ -134,6 +134,7 @@ extern const Info<int> GFX_PLANAR_SHADOWS_OPACITY;
 extern const Info<int> GFX_PLANAR_SHADOWS_DIRECTION_X;
 extern const Info<int> GFX_PLANAR_SHADOWS_DIRECTION_Z;
 extern const Info<int> GFX_PLANAR_SHADOWS_UP_MODE;
+extern const Info<bool> GFX_PLANAR_SHADOWS_DEBUG;
 
 // Color.Correction
 

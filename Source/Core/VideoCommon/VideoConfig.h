@@ -298,6 +298,7 @@ struct VideoConfig final
   int iPlanarShadowsDirectionX = 45;  // Hundredths of a unit per unit of height, -200 - 200
   int iPlanarShadowsDirectionZ = 30;
   int iPlanarShadowsUpMode = 0;       // 0 = Estimate the ground plane, 1 = Level camera
+  bool bPlanarShadowsDebug = false;   // Opaque magenta shadows and an on-screen statistics line
 
   bool bEFBEmulateFormatChanges = false;
   bool bSkipEFBCopyToRam = false;

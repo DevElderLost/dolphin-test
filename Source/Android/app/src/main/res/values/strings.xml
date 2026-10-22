@@ -238,6 +238,8 @@
     <string name="planar_shadows_direction_description">Offset of the shadow per unit of height, relative to the camera (X: right, Z: towards the viewer).</string>
     <string name="planar_shadows_up_mode">Ground Detection</string>
     <string name="planar_shadows_up_mode_description">Estimate finds the ground plane from the level geometry. Level camera assumes the camera is not tilted.</string>
+    <string name="planar_shadows_debug">Debug View</string>
+    <string name="planar_shadows_debug_description">Draws the shadows in magenta and shows statistics on screen (draw counts, detected actors, ground normal). Use this when reporting glitches.</string>
     <string name="planar_shadows_low">Low</string>
     <string name="planar_shadows_medium">Medium</string>
     <string name="planar_shadows_high">High</string>

@@ -5,6 +5,7 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "Common/CommonTypes.h"
@@ -64,6 +65,21 @@ private:
     u8 color[4];
   };
 
+  // What ObserveBatch saw during the frame, shown on screen in debug mode.
+  struct DebugCounters
+  {
+    u32 batches = 0;
+    u32 skinned_batches = 0;
+    u32 skinned_triangles = 0;
+    u32 max_matrices = 0;
+    u32 single_matrix_batches = 0;
+    u32 receiver_batches = 0;
+    u32 receiver_triangles = 0;
+    u32 injections = 0;
+    u32 shadow_triangles = 0;
+    std::string build;
+  };
+
   static constexpr size_t kMaxScenes = 8;
   static constexpr u32 kInvalidScene = 0xFFFFFFFFu;
 
@@ -72,10 +88,13 @@ private:
   void DestroyPipelines();
   void ProjectShadow(const SceneState& scene, const std::vector<PlanarShadowVertex>& shadow);
   void DrawVertices(const SceneState& scene, u32 depth_func);
+  void ShowDebugStats();
 
   PlanarShadows m_shadows;
   bool m_has_pending = false;
   bool m_injecting = false;
+  bool m_debug = false;
+  DebugCounters m_debug_counters;
 
   std::vector<SceneState> m_scenes;
 

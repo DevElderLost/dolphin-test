@@ -169,6 +169,8 @@ const Info<int> GFX_PLANAR_SHADOWS_DIRECTION_Z{
     {System::GFX, "Enhancements", "PlanarShadowsDirectionZ"}, 30};
 const Info<int> GFX_PLANAR_SHADOWS_UP_MODE{{System::GFX, "Enhancements", "PlanarShadowsUpMode"},
                                            0};
+const Info<bool> GFX_PLANAR_SHADOWS_DEBUG{{System::GFX, "Enhancements", "PlanarShadowsDebug"},
+                                          false};
 
 // Color.Correction
 

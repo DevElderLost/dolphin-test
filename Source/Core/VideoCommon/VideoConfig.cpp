@@ -153,6 +153,7 @@ void VideoConfig::Refresh()
   iPlanarShadowsDirectionX = Config::Get(Config::GFX_PLANAR_SHADOWS_DIRECTION_X);
   iPlanarShadowsDirectionZ = Config::Get(Config::GFX_PLANAR_SHADOWS_DIRECTION_Z);
   iPlanarShadowsUpMode = Config::Get(Config::GFX_PLANAR_SHADOWS_UP_MODE);
+  bPlanarShadowsDebug = Config::Get(Config::GFX_PLANAR_SHADOWS_DEBUG);
 
   texture_filtering_mode = Config::Get(Config::GFX_ENHANCE_FORCE_TEXTURE_FILTERING);
   iMaxAnisotropy = Config::Get(Config::GFX_ENHANCE_MAX_ANISOTROPY);

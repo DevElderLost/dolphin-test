@@ -894,6 +894,33 @@ bool PlanarShadows::Build(uint32_t id, std::vector<PlanarShadowVertex>& out)
   if (receiver)
     PrepareReceiver(*receiver, basis);
   const std::vector<Caster> clusters = ClusterCasters(id, basis);
+  m_stats.clusters = clusters.size();
+  m_stats.receiver_triangles = receiver ? receiver->triangles.size() : 0;
+  m_stats.up = basis.up;
+  {
+    float best = -1.0f;
+    for (const Caster& c : clusters)
+    {
+      Point low{1e30f, 1e30f, 1e30f}, high{-1e30f, -1e30f, -1e30f};
+      for (const Triangle& t : c.triangles)
+      {
+        for (const Point& p : t)
+        {
+          for (unsigned k = 0; k < 3; ++k)
+          {
+            low[k] = std::min(low[k], p[k]);
+            high[k] = std::max(high[k], p[k]);
+          }
+        }
+      }
+      const float volume = (high[0] - low[0]) * (high[1] - low[1]) * (high[2] - low[2]);
+      if (volume > best)
+      {
+        best = volume;
+        m_stats.largest_extent = {high[0] - low[0], high[1] - low[1], high[2] - low[2]};
+      }
+    }
+  }
 
   std::vector<Pick> picks;
   for (const Caster& caster : clusters)

@@ -1835,6 +1835,14 @@ class SettingsFragmentPresenter(
         sl.add(
             SwitchSetting(
                 context,
+                BooleanSetting.GFX_PLANAR_SHADOWS_DEBUG,
+                R.string.planar_shadows_debug,
+                R.string.planar_shadows_debug_description
+            )
+        )
+        sl.add(
+            SwitchSetting(
+                context,
                 BooleanSetting.GFX_WIDESCREEN_HACK,
                 R.string.wide_screen_hack,
                 R.string.wide_screen_hack_description

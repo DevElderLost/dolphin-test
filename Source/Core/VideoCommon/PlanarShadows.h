@@ -101,6 +101,10 @@ public:
   // Statistics of the previous Build, for logging.
   struct Stats
   {
+    size_t clusters = 0;           // Actors left after merging draws.
+    size_t receiver_triangles = 0; // Up facing receiver triangles used.
+    Point up{0.0f, 1.0f, 0.0f};    // Ground normal in eye space.
+    Point largest_extent{0, 0, 0}; // Width, height, depth of the biggest actor (shadow space).
     size_t casters = 0;
     size_t lod_culled = 0;
     size_t emitted = 0;

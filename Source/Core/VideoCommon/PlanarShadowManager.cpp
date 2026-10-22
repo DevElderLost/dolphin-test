@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <cstring>
 
+#include <fmt/format.h>
+
 #include "Common/CommonTypes.h"
 #include "Common/Logging/Log.h"
 
@@ -21,6 +23,7 @@
 #include "VideoCommon/FramebufferManager.h"
 #include "VideoCommon/FramebufferShaderGen.h"
 #include "VideoCommon/NativeVertexFormat.h"
+#include "VideoCommon/OnScreenDisplay.h"
 #include "VideoCommon/ShaderCache.h"
 #include "VideoCommon/VertexManagerBase.h"
 #include "VideoCommon/VideoConfig.h"
@@ -79,6 +82,7 @@ void PlanarShadowManager::RefreshOptions()
   o.directionZ = std::clamp(g_ActiveConfig.iPlanarShadowsDirectionZ, -200, 200) * 0.01f;
   o.floorOffset = 0.0f;
   o.auto_up = g_ActiveConfig.iPlanarShadowsUpMode == 0;
+  m_debug = g_ActiveConfig.bPlanarShadowsDebug;
   m_shadows.SetOptions(o);
   if (!o.enabled)
   {
@@ -88,8 +92,24 @@ void PlanarShadowManager::RefreshOptions()
   }
 }
 
+void PlanarShadowManager::ShowDebugStats()
+{
+  const DebugCounters& d = m_debug_counters;
+  OSD::AddMessage(fmt::format("PS skin {}b/{}t (max {} mtx)  1mtx {}b  recv {}b/{}t  scenes {}",
+                              d.skinned_batches, d.skinned_triangles, d.max_matrices,
+                              d.single_matrix_batches, d.receiver_batches, d.receiver_triangles,
+                              m_scenes.size()),
+                  1000, OSD::Color::CYAN);
+  OSD::AddMessage(fmt::format("PS inj {} shadow {}t  {}", d.injections, d.shadow_triangles,
+                              d.build.empty() ? "no build" : d.build),
+                  1000, OSD::Color::CYAN);
+}
+
 void PlanarShadowManager::EndFrame()
 {
+  if (m_debug && m_shadows.Options().enabled)
+    ShowDebugStats();
+  m_debug_counters = DebugCounters();
   // Whatever is left was not followed by a 2D draw or an EFB copy, it is not part of a visible scene.
   m_shadows.Reset();
   m_scenes.clear();
@@ -196,6 +216,24 @@ void PlanarShadowManager::ObserveBatch(const u8* vertices, u32 num_vertices,
   // Skinned meshes use more than one position matrix inside a single draw. Draws with a per vertex
   // matrix that only use one are body parts of unknown kind, they are neither caster nor receiver.
   const bool skinned = per_vertex_matrix && std::popcount(matrix_mask) >= 2;
+  if (m_debug)
+  {
+    ++m_debug_counters.batches;
+    if (skinned)
+    {
+      ++m_debug_counters.skinned_batches;
+      m_debug_counters.max_matrices =
+          std::max<u32>(m_debug_counters.max_matrices, std::popcount(matrix_mask));
+    }
+    else if (per_vertex_matrix)
+    {
+      ++m_debug_counters.single_matrix_batches;
+    }
+    else
+    {
+      ++m_debug_counters.receiver_batches;
+    }
+  }
   if (per_vertex_matrix && !skinned)
     return;
 
@@ -227,6 +265,14 @@ void PlanarShadowManager::ObserveBatch(const u8* vertices, u32 num_vertices,
   }
   if (m_triangles.empty())
     return;
+
+  if (m_debug)
+  {
+    if (skinned)
+      m_debug_counters.skinned_triangles += static_cast<u32>(m_triangles.size());
+    else
+      m_debug_counters.receiver_triangles += static_cast<u32>(m_triangles.size());
+  }
 
   PlanarShadows::Scene scene;
   scene.id = scene_id;
@@ -262,6 +308,16 @@ void PlanarShadowManager::Inject()
     if (!m_shadows.Build(id, m_shadow_vertices))
       continue;
     ProjectShadow(scene, m_shadow_vertices);
+    if (m_debug)
+    {
+      const PlanarShadows::Stats& s = m_shadows.GetStats();
+      ++m_debug_counters.injections;
+      m_debug_counters.shadow_triangles += static_cast<u32>(m_draw_vertices.size() / 3);
+      m_debug_counters.build = fmt::format(
+          "actors {} lod-cut {} recv {}t up({:.2f},{:.2f},{:.2f}) big {:.1f}x{:.1f}x{:.1f}",
+          s.clusters, s.lod_culled, s.receiver_triangles, s.up[0], s.up[1], s.up[2],
+          s.largest_extent[0], s.largest_extent[1], s.largest_extent[2]);
+    }
     DrawVertices(scene, scene.depth_func);
   }
   m_injecting = false;
@@ -298,10 +354,11 @@ void PlanarShadowManager::ProjectShadow(const SceneState& scene,
     d.position[1] = c.v[1] / c.v[3];
     d.position[2] = c.v[2] / c.v[3];
     d.position[3] = 1.0f;
-    d.color[0] = 0;
+    // Debug: opaque-ish magenta, so that the geometry can be seen.
+    d.color[0] = m_debug ? 255 : 0;
     d.color[1] = 0;
-    d.color[2] = 0;
-    d.color[3] = static_cast<u8>(std::min<u32>(alpha, 255));
+    d.color[2] = m_debug ? 255 : 0;
+    d.color[3] = m_debug ? 200 : static_cast<u8>(std::min<u32>(alpha, 255));
     m_draw_vertices.push_back(d);
   };
 

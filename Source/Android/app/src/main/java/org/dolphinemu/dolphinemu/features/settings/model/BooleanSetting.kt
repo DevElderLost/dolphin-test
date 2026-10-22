@@ -817,6 +817,12 @@ enum class BooleanSetting(
         "PlanarShadows",
         false
     ),
+    GFX_PLANAR_SHADOWS_DEBUG(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadowsDebug",
+        false
+    ),
     GFX_CC_CORRECT_COLOR_SPACE(
         Settings.FILE_GFX,
         Settings.SECTION_GFX_COLOR_CORRECTION,
