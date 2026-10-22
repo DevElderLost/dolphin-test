@@ -140,6 +140,10 @@ add_library(videocommon
   PixelShaderGen.h
   PixelShaderManager.cpp
   PixelShaderManager.h
+  PlanarShadowManager.cpp
+  PlanarShadowManager.h
+  PlanarShadows.cpp
+  PlanarShadows.h
   PostProcessing.cpp
   PostProcessing.h
   Present.cpp

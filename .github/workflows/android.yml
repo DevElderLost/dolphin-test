@@ -1,0 +1,106 @@
+name: Android Build
+
+# Builds only the Android app (APK). No desktop, macOS, Windows or Flatpak jobs.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "Gradle build type"
+        type: choice
+        options: [Debug, Release]
+        default: Debug
+      arm64_only:
+        description: "Build arm64-v8a only (much faster than arm64-v8a + x86_64)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUILD_TYPE: ${{ github.event.inputs.build_type || 'Debug' }}
+  ARM64_ONLY: ${{ github.event.inputs.arm64_only || 'true' }}
+
+jobs:
+  android:
+    name: Android (${{ github.event.inputs.build_type || 'Debug' }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" || true
+          df -h /
+
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main' }}
+
+      - name: Install NDK and CMake
+        run: |
+          NDK=$(grep -oP 'ndkVersion = "\K[^"]+' Source/Android/app/build.gradle.kts)
+          echo "NDK version: $NDK"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$NDK" "cmake;3.31.6"
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build ccache
+
+      - name: Restrict ABIs to arm64-v8a
+        if: env.ARM64_ONLY == 'true'
+        run: |
+          sed -i 's/abiFilters += listOf("arm64-v8a", "x86_64")/abiFilters += listOf("arm64-v8a")/' Source/Android/app/build.gradle.kts
+          grep -n abiFilters Source/Android/app/build.gradle.kts
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-android-${{ env.BUILD_TYPE }}-${{ env.ARM64_ONLY }}-${{ github.sha }}
+          restore-keys: |
+            ccache-android-${{ env.BUILD_TYPE }}-${{ env.ARM64_ONLY }}-
+
+      - name: Build APK
+        working-directory: Source/Android
+        env:
+          CCACHE_DIR: ${{ github.workspace }}/.ccache
+          CMAKE_C_COMPILER_LAUNCHER: ccache
+          CMAKE_CXX_COMPILER_LAUNCHER: ccache
+        run: |
+          chmod +x gradlew
+          ./gradlew "assemble${BUILD_TYPE}" \
+            --no-daemon --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
+
+      - name: Collect APKs
+        run: |
+          mkdir -p dist
+          find Source/Android/app/build/outputs/apk -name '*.apk' -exec cp -v {} dist/ \;
+          ls -lh dist
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-android-${{ env.BUILD_TYPE }}-${{ github.sha }}
+          path: dist/*.apk
+          if-no-files-found: error

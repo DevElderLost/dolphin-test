@@ -127,6 +127,13 @@ extern const Info<bool> GFX_ENHANCE_DISABLE_COPY_FILTER;
 extern const Info<bool> GFX_ENHANCE_ARBITRARY_MIPMAP_DETECTION;
 extern const Info<float> GFX_ENHANCE_ARBITRARY_MIPMAP_DETECTION_THRESHOLD;
 extern const Info<bool> GFX_ENHANCE_HDR_OUTPUT;
+extern const Info<bool> GFX_PLANAR_SHADOWS;
+extern const Info<int> GFX_PLANAR_SHADOWS_QUALITY;
+extern const Info<int> GFX_PLANAR_SHADOWS_DISTANCE;
+extern const Info<int> GFX_PLANAR_SHADOWS_OPACITY;
+extern const Info<int> GFX_PLANAR_SHADOWS_DIRECTION_X;
+extern const Info<int> GFX_PLANAR_SHADOWS_DIRECTION_Z;
+extern const Info<int> GFX_PLANAR_SHADOWS_UP_MODE;
 
 // Color.Correction
 

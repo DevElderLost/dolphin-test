@@ -313,6 +313,38 @@
         <item>4</item>
     </integer-array>
 
+    <!-- Planar Shadows -->
+    <string-array name="planarShadowsQualityEntries">
+        <item>@string/planar_shadows_low</item>
+        <item>@string/planar_shadows_medium</item>
+        <item>@string/planar_shadows_high</item>
+    </string-array>
+    <integer-array name="planarShadowsQualityValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </integer-array>
+    <string-array name="planarShadowsDistanceEntries">
+        <item>@string/planar_shadows_no_limit</item>
+        <item>@string/planar_shadows_short</item>
+        <item>@string/planar_shadows_medium</item>
+        <item>@string/planar_shadows_long</item>
+    </string-array>
+    <integer-array name="planarShadowsDistanceValues">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </integer-array>
+    <string-array name="planarShadowsUpModeEntries">
+        <item>@string/planar_shadows_estimate</item>
+        <item>@string/planar_shadows_level_camera</item>
+    </string-array>
+    <integer-array name="planarShadowsUpModeValues">
+        <item>0</item>
+        <item>1</item>
+    </integer-array>
+
     <!-- Texture Filtering Preference -->
     <string-array name="textureFilteringEntries">
         <item>@string/filtering_default</item>

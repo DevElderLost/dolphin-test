@@ -1756,6 +1756,82 @@ class SettingsFragmentPresenter(
                 R.string.arbitrary_mipmap_detection_description
             )
         )
+
+        sl.add(HeaderSetting(context, R.string.planar_shadows_header, 0))
+        sl.add(
+            SwitchSetting(
+                context,
+                BooleanSetting.GFX_PLANAR_SHADOWS,
+                R.string.planar_shadows,
+                R.string.planar_shadows_description
+            )
+        )
+        sl.add(
+            SingleChoiceSetting(
+                context,
+                IntSetting.GFX_PLANAR_SHADOWS_QUALITY,
+                R.string.planar_shadows_quality,
+                0,
+                R.array.planarShadowsQualityEntries,
+                R.array.planarShadowsQualityValues
+            )
+        )
+        sl.add(
+            SingleChoiceSetting(
+                context,
+                IntSetting.GFX_PLANAR_SHADOWS_DISTANCE,
+                R.string.planar_shadows_distance,
+                R.string.planar_shadows_distance_description,
+                R.array.planarShadowsDistanceEntries,
+                R.array.planarShadowsDistanceValues
+            )
+        )
+        sl.add(
+            IntSliderSetting(
+                context,
+                IntSetting.GFX_PLANAR_SHADOWS_OPACITY,
+                R.string.planar_shadows_opacity,
+                0,
+                0,
+                60,
+                "%",
+                5
+            )
+        )
+        sl.add(
+            IntSliderSetting(
+                context,
+                IntSetting.GFX_PLANAR_SHADOWS_DIRECTION_X,
+                R.string.planar_shadows_direction_x,
+                R.string.planar_shadows_direction_description,
+                -200,
+                200,
+                "",
+                5
+            )
+        )
+        sl.add(
+            IntSliderSetting(
+                context,
+                IntSetting.GFX_PLANAR_SHADOWS_DIRECTION_Z,
+                R.string.planar_shadows_direction_z,
+                R.string.planar_shadows_direction_description,
+                -200,
+                200,
+                "",
+                5
+            )
+        )
+        sl.add(
+            SingleChoiceSetting(
+                context,
+                IntSetting.GFX_PLANAR_SHADOWS_UP_MODE,
+                R.string.planar_shadows_up_mode,
+                R.string.planar_shadows_up_mode_description,
+                R.array.planarShadowsUpModeEntries,
+                R.array.planarShadowsUpModeValues
+            )
+        )
         sl.add(
             SwitchSetting(
                 context,

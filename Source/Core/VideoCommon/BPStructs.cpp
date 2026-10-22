@@ -35,6 +35,7 @@
 #include "VideoCommon/TMEM.h"
 #include "VideoCommon/TextureCacheBase.h"
 #include "VideoCommon/TextureDecoder.h"
+#include "VideoCommon/VertexManagerBase.h"
 #include "VideoCommon/VideoBackendBase.h"
 #include "VideoCommon/VideoCommon.h"
 #include "VideoCommon/VideoConfig.h"
@@ -239,6 +240,9 @@ static void BPWritten(PixelShaderManager& pixel_shader_manager, XFStateManager& 
   // first and clear afterwards.
   case BPMEM_TRIGGER_EFB_COPY:  // Copy EFB Region or Render to the XFB or Clear the screen.
   {
+    // The planar shadows of the 3D scene have to be in the EFB before it is copied.
+    g_vertex_manager->OnEFBCopyPlanarShadows();
+
     // The bottom right is within the rectangle
     // The values in bpmem.copyTexSrcXY and bpmem.copyTexSrcWH are updated in case 0x49 and 0x4a in
     // this function

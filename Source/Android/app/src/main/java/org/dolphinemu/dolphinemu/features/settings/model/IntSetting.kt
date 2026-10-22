@@ -120,6 +120,42 @@ enum class IntSetting(
         "MaxAnisotropy",
         0
     ),
+    GFX_PLANAR_SHADOWS_QUALITY(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadowsQuality",
+        1
+    ),
+    GFX_PLANAR_SHADOWS_DISTANCE(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadowsDistance",
+        2
+    ),
+    GFX_PLANAR_SHADOWS_OPACITY(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadowsOpacity",
+        25
+    ),
+    GFX_PLANAR_SHADOWS_DIRECTION_X(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadowsDirectionX",
+        45
+    ),
+    GFX_PLANAR_SHADOWS_DIRECTION_Z(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadowsDirectionZ",
+        30
+    ),
+    GFX_PLANAR_SHADOWS_UP_MODE(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadowsUpMode",
+        0
+    ),
     GFX_CC_GAME_COLOR_SPACE(
         Settings.FILE_GFX,
         Settings.SECTION_GFX_COLOR_CORRECTION,

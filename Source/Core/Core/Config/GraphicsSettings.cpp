@@ -156,6 +156,19 @@ const Info<bool> GFX_ENHANCE_ARBITRARY_MIPMAP_DETECTION{
 const Info<float> GFX_ENHANCE_ARBITRARY_MIPMAP_DETECTION_THRESHOLD{
     {System::GFX, "Enhancements", "ArbitraryMipmapDetectionThreshold"}, 14.0f};
 const Info<bool> GFX_ENHANCE_HDR_OUTPUT{{System::GFX, "Enhancements", "HDROutput"}, false};
+const Info<bool> GFX_PLANAR_SHADOWS{{System::GFX, "Enhancements", "PlanarShadows"}, false};
+const Info<int> GFX_PLANAR_SHADOWS_QUALITY{{System::GFX, "Enhancements", "PlanarShadowsQuality"},
+                                           1};
+const Info<int> GFX_PLANAR_SHADOWS_DISTANCE{{System::GFX, "Enhancements", "PlanarShadowsDistance"},
+                                            2};
+const Info<int> GFX_PLANAR_SHADOWS_OPACITY{{System::GFX, "Enhancements", "PlanarShadowsOpacity"},
+                                           25};
+const Info<int> GFX_PLANAR_SHADOWS_DIRECTION_X{
+    {System::GFX, "Enhancements", "PlanarShadowsDirectionX"}, 45};
+const Info<int> GFX_PLANAR_SHADOWS_DIRECTION_Z{
+    {System::GFX, "Enhancements", "PlanarShadowsDirectionZ"}, 30};
+const Info<int> GFX_PLANAR_SHADOWS_UP_MODE{{System::GFX, "Enhancements", "PlanarShadowsUpMode"},
+                                           0};
 
 // Color.Correction
 

@@ -124,6 +124,7 @@ bool VertexManagerBase::Initialize()
       [this](const PresentInfo& pi) { m_ticks_elapsed = pi.emulated_timestamp; });
   m_index_generator.Init();
   m_cpu_cull.Init();
+  m_planar_shadows.RefreshOptions();
   return true;
 }
 
@@ -149,6 +150,10 @@ DataReader VertexManagerBase::PrepareForAdditionalData(OpcodeDecoder::Primitive 
 {
   // Flush all EFB pokes. Since the buffer is shared, we can't draw pokes+primitives concurrently.
   g_framebuffer_manager->FlushEFBPokes();
+
+  // The first 2D draw after a 3D scene is where the planar shadows go.
+  if (m_planar_shadows.HasPending() && xfmem.projection.type == ProjectionType::Orthographic)
+    m_planar_shadows.Inject();
 
   // The SSE vertex loader can write up to 4 bytes past the end
   u32 const needed_vertex_bytes = count * stride + 4;
@@ -595,6 +600,18 @@ void VertexManagerBase::Flush()
     }
   }
   vertex_shader_manager.SetConstants(texture_names, xf_state_manager);
+  if (!m_cull_all && g_ActiveConfig.bPlanarShadows)
+  {
+    // The batch is still in CPU accessible memory and the constants are current.
+    if (const NativeVertexFormat* format = VertexLoaderManager::GetCurrentVertexFormat())
+    {
+      m_planar_shadows.ObserveBatch(m_base_buffer_pointer, m_index_generator.GetNumVerts(),
+                                    format->GetVertexDeclaration(),
+                                    m_index_generator.GetIndexDataStart(),
+                                    m_index_generator.GetIndexLen(), m_current_primitive_type,
+                                    vertex_shader_manager.constants);
+    }
+  }
   if (!bpmem.genMode.zfreeze)
   {
     // Must be done after VertexShaderManager::SetConstants()
@@ -906,6 +923,7 @@ void VertexManagerBase::OnConfigChange()
 {
   // Reload index generator function tables in case VS expand config changed
   m_index_generator.Init();
+  m_planar_shadows.RefreshOptions();
 }
 
 void VertexManagerBase::OnDraw()
@@ -969,8 +987,16 @@ void VertexManagerBase::OnEFBCopyToRAM()
   g_gfx->Flush();
 }
 
+void VertexManagerBase::OnEFBCopyPlanarShadows()
+{
+  // Shadows go into the copy, whatever was collected is then done with.
+  m_planar_shadows.Inject();
+  m_planar_shadows.EndFrame();
+}
+
 void VertexManagerBase::OnEndFrame()
 {
+  m_planar_shadows.EndFrame();
   m_draw_counter = 0;
   m_last_efb_copy_draw_counter = 0;
   m_scheduled_command_buffer_kicks.clear();

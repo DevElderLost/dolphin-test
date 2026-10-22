@@ -146,6 +146,13 @@ void VideoConfig::Refresh()
   iShaderCompilerThreads = Config::Get(Config::GFX_SHADER_COMPILER_THREADS);
   iShaderPrecompilerThreads = Config::Get(Config::GFX_SHADER_PRECOMPILER_THREADS);
   bCPUCull = Config::Get(Config::GFX_CPU_CULL);
+  bPlanarShadows = Config::Get(Config::GFX_PLANAR_SHADOWS);
+  iPlanarShadowsQuality = Config::Get(Config::GFX_PLANAR_SHADOWS_QUALITY);
+  iPlanarShadowsDistance = Config::Get(Config::GFX_PLANAR_SHADOWS_DISTANCE);
+  iPlanarShadowsOpacity = Config::Get(Config::GFX_PLANAR_SHADOWS_OPACITY);
+  iPlanarShadowsDirectionX = Config::Get(Config::GFX_PLANAR_SHADOWS_DIRECTION_X);
+  iPlanarShadowsDirectionZ = Config::Get(Config::GFX_PLANAR_SHADOWS_DIRECTION_Z);
+  iPlanarShadowsUpMode = Config::Get(Config::GFX_PLANAR_SHADOWS_UP_MODE);
 
   texture_filtering_mode = Config::Get(Config::GFX_ENHANCE_FORCE_TEXTURE_FILTERING);
   iMaxAnisotropy = Config::Get(Config::GFX_ENHANCE_MAX_ANISOTROPY);

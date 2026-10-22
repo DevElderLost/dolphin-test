@@ -11,6 +11,7 @@
 #include "Common/MathUtil.h"
 #include "VideoCommon/CPUCull.h"
 #include "VideoCommon/IndexGenerator.h"
+#include "VideoCommon/PlanarShadowManager.h"
 #include "VideoCommon/RenderState.h"
 #include "VideoCommon/ShaderCache.h"
 #include "VideoCommon/VideoEvents.h"
@@ -168,6 +169,9 @@ public:
   // Call at the end of a frame.
   void OnEndFrame();
 
+  // Draws the planar shadows of the 3D scene collected so far. Call before an EFB copy.
+  void OnEFBCopyPlanarShadows();
+
 protected:
   // When utility uniforms are used, the GX uniforms need to be re-written afterwards.
   static void InvalidateConstants();
@@ -215,6 +219,7 @@ protected:
 
   IndexGenerator m_index_generator;
   CPUCull m_cpu_cull;
+  PlanarShadowManager m_planar_shadows;
 
 private:
   // Minimum number of draws per command buffer when attempting to preempt a readback operation.

@@ -290,6 +290,15 @@ struct VideoConfig final
   bool bBBoxEnable = false;
   bool bCPUCull = false;
 
+  // Planar silhouette shadows (see PlanarShadows.h)
+  bool bPlanarShadows = false;
+  int iPlanarShadowsQuality = 1;      // 0 = Low, 1 = Medium, 2 = High
+  int iPlanarShadowsDistance = 2;     // 0 = No limit, 1 = Short, 2 = Medium, 3 = Long
+  int iPlanarShadowsOpacity = 25;     // Percent, 0 - 60
+  int iPlanarShadowsDirectionX = 45;  // Hundredths of a unit per unit of height, -200 - 200
+  int iPlanarShadowsDirectionZ = 30;
+  int iPlanarShadowsUpMode = 0;       // 0 = Estimate the ground plane, 1 = Level camera
+
   bool bEFBEmulateFormatChanges = false;
   bool bSkipEFBCopyToRam = false;
   bool bSkipXFBCopyToRam = false;

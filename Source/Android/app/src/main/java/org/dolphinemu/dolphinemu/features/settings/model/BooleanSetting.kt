@@ -811,6 +811,12 @@ enum class BooleanSetting(
         "ArbitraryMipmapDetection",
         false
     ),
+    GFX_PLANAR_SHADOWS(
+        Settings.FILE_GFX,
+        Settings.SECTION_GFX_ENHANCEMENTS,
+        "PlanarShadows",
+        false
+    ),
     GFX_CC_CORRECT_COLOR_SPACE(
         Settings.FILE_GFX,
         Settings.SECTION_GFX_COLOR_CORRECTION,
