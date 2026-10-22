@@ -52,6 +52,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
+          # Externals/SDL ships a gradle-wrapper.jar the validator does not know; Dolphin's own
+          # Source/Android wrapper is the one that is used.
+          validate-wrappers: false
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main' }}
 
       - name: Install NDK and CMake
