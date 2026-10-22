@@ -158,7 +158,8 @@ private:
   };
   struct ClippedPolygon;
 
-  static ClippedPolygon ClipRectangle(const Triangle& t, float x0, float z0, float x1, float z1);
+  static ClippedPolygon ClipRectangle(const Triangle& t, float x0, float z0, float x1, float z1,
+                                      float y0, float y1);
   static void BuildGrid(Caster& receiver);
   template <class Visit>
   void NearReceivers(Caster* receiver, float x0, float z0, float x1, float z1, Visit visit);

@@ -90,7 +90,7 @@ static unsigned CellOf(float offset, float inverse, unsigned count)
 }
 
 PlanarShadows::ClippedPolygon PlanarShadows::ClipRectangle(const Triangle& t, float x0, float z0,
-                                                           float x1, float z1)
+                                                           float x1, float z1, float y0, float y1)
 {
   ClippedPolygon polygon;
   for (const auto& p : t)
@@ -124,6 +124,10 @@ PlanarShadows::ClippedPolygon PlanarShadows::ClipRectangle(const Triangle& t, fl
   cut(0, x1, false);
   cut(2, z0, true);
   cut(2, z1, false);
+  // Keep the shadow on the surface near the actor's ground. Huge or steep receiver triangles
+  // (sky domes, cliffs, mountain walls) would otherwise receive the shadow at any height.
+  cut(1, y0, true);
+  cut(1, y1, false);
   return polygon;
 }
 
@@ -851,7 +855,9 @@ void PlanarShadows::Rasterize(Caster* receiver, const Caster& caster, unsigned n
         {
           continue;
         }
-        const ClippedPolygon polygon = ClipRectangle(*t, left, low, right, high);
+        const ClippedPolygon polygon = ClipRectangle(*t, left, low, right, high,
+                                                    floor_y - height * 0.5f,
+                                                    floor_y + height * 0.5f);
         if (polygon.size() < 3)
           continue;
         const auto vertex = [&](const Point& p) {

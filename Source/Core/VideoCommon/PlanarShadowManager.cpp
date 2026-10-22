@@ -364,30 +364,55 @@ void PlanarShadowManager::ProjectShadow(const SceneState& scene,
 
   for (size_t i = 0; i + 2 < shadow.size(); i += 3)
   {
-    // Clip the triangle against the w > kMinW plane, which leaves at most four vertices.
-    Clip in[3] = {transform(shadow[i]), transform(shadow[i + 1]), transform(shadow[i + 2])};
-    Clip polygon[4];
-    size_t count = 0;
-    for (size_t k = 0; k < 3; ++k)
-    {
-      const Clip& a = in[k];
-      const Clip& b = in[(k + 1) % 3];
-      const bool a_inside = a.v[3] > kMinW;
-      const bool b_inside = b.v[3] > kMinW;
-      if (a_inside)
-        polygon[count++] = a;
-      if (a_inside != b_inside)
+    // Clip the triangle against w > kMinW and the near and far depth planes. Without this,
+    // geometry close to or behind the camera divides by a tiny w and turns into screen filling
+    // triangles, or is depth clamped onto the near plane and passes the depth test everywhere.
+    const float depth_min = g_backend_info.bSupportsClipControl ? 0.0f : -1.0f;
+    const auto distance = [&](const Clip& c, u32 plane) {
+      switch (plane)
       {
-        const float t = (kMinW - a.v[3]) / (b.v[3] - a.v[3]);
-        Clip hit;
-        for (u32 j = 0; j < 4; ++j)
-          hit.v[j] = a.v[j] + t * (b.v[j] - a.v[j]);
-        hit.v[3] = kMinW;
-        polygon[count++] = hit;
+      case 0:
+        return c.v[3] - kMinW;
+      case 1:
+        return c.v[2] - depth_min * c.v[3];
+      default:
+        return c.v[3] - c.v[2];
       }
+    };
+    Clip buffers[2][8];
+    buffers[0][0] = transform(shadow[i]);
+    buffers[0][1] = transform(shadow[i + 1]);
+    buffers[0][2] = transform(shadow[i + 2]);
+    size_t count = 3;
+    u32 current = 0;
+    for (u32 plane = 0; plane < 3 && count >= 3; ++plane)
+    {
+      const Clip* src = buffers[current];
+      Clip* dst = buffers[current ^ 1];
+      size_t next = 0;
+      for (size_t k = 0; k < count; ++k)
+      {
+        const Clip& a = src[k];
+        const Clip& b = src[(k + 1) % count];
+        const float da = distance(a, plane);
+        const float db = distance(b, plane);
+        if (da >= 0.0f)
+          dst[next++] = a;
+        if ((da >= 0.0f) != (db >= 0.0f))
+        {
+          const float t = da / (da - db);
+          Clip hit;
+          for (u32 j = 0; j < 4; ++j)
+            hit.v[j] = a.v[j] + t * (b.v[j] - a.v[j]);
+          dst[next++] = hit;
+        }
+      }
+      count = next;
+      current ^= 1;
     }
     if (count < 3)
       continue;
+    const Clip* polygon = buffers[current];
     const u32 alpha = shadow[i].alpha;
     for (size_t k = 1; k + 1 < count; ++k)
     {
